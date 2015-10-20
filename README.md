@@ -140,3 +140,21 @@ The following footer.php file below will be added to the files at the end so tha
 </html>
 ```
 ***
+### **index.php**
+
+A navigation button leading to „Create User“ and a button to edit as well as delete users are important for the start.
+
+'index.php' is about the records from the mysql database. It shows this record with pagination feature. In the codes you check if more than 0 record found or if there are any users to display you can retrieve users from Database. The table applied in this file are created under bootstrap data table with  class 'table table-hover table-responsive table-bordered'.
+
+#### Create User Button 
+
+It is important to provide this code before the HTML form. When user will click the create (submit) button after entering the values in the HTML form, then values will be sent via POST request and following code below will record it in the database.
+```php
+// create user button
+echo "<div class='right-button-margin'>";
+echo "<a href='create.php' class='btn btn-primary pull-right'>";
+echo "<span class='glyphicon glyphicon-plus'></span> Create User";
+echo "</a>";
+echo "</div>";
+```
+
