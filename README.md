@@ -78,6 +78,7 @@ class Database
     }
 }
 ```
+***
 ### **Header and Footer Layouts**
 
 I will create the following template files in order to remove some mess from the code: header.php and footer.php. Template files involve the main content of the Web pages.
@@ -146,7 +147,7 @@ A navigation button leading to „Create User“ and a button to edit as well as
 
 'index.php' is about the records from the mysql database. It shows this record with pagination feature. In the codes you check if more than 0 record found or if there are any users to display you can retrieve users from Database. The table applied in this file are created under bootstrap data table with  class 'table table-hover table-responsive table-bordered'.
 
-#### Create User Button 
+##### **Create User Button** 
 
 It is important to provide this code before the HTML form. When user will click the create (submit) button after entering the values in the HTML form, then values will be sent via POST request and following code below will record it in the database.
 ```php
@@ -157,4 +158,261 @@ echo "<span class='glyphicon glyphicon-plus'></span> Create User";
 echo "</a>";
 echo "</div>";
 ```
+Now the "index.php" file's code should look like below:
+```php
+<?php
+
+// include database and object files
+include_once 'classes/database.php';
+include_once 'classes/user.php';
+include_once 'classes/category.php';
+include_once 'initial.php';
+
+// for pagination purposes
+$page = isset($_GET['page']) ? $_GET['page'] : 1; // page is the current page, if there's nothing set, default is page 1
+$records_per_page = 5; // set records or rows of data per page
+$from_record_num = ($records_per_page * $page) - $records_per_page; // calculate for the query limit clause
+
+// instantiate database and user object
+$user = new User($db);
+$category = new Category($db);
+
+// include header file
+$page_title = "Users";
+include_once "header.php";
+
+// create user button
+echo "<div class='right-button-margin'>";
+echo "<a href='create.php' class='btn btn-primary pull-right'>";
+echo "<span class='glyphicon glyphicon-plus'></span> Create User";
+echo "</a>";
+echo "</div>";
+
+// select all users
+$prep_state = $user->getAllUsers($from_record_num, $records_per_page); //Name of the PHP variable to bind to the SQL statement parameter.
+$num = $prep_state->rowCount();
+
+// check if more than 0 record found
+if($num>=0){
+
+    echo "<table class='table table-hover table-responsive table-bordered'>";
+    echo "<tr>";
+    echo "<th>First Name</th>";
+    echo "<th>Last Name</th>";
+    echo "<th>E-Mail</th>";
+    echo "<th>Mobile</th>";
+    echo "<th>Category</th>";
+    echo "<th>Actions</th>";
+    echo "</tr>";
+
+    while ($row = $prep_state->fetch(PDO::FETCH_ASSOC)){
+
+        extract($row); //Import variables into the current symbol table from an array
+
+        echo "<tr>";
+
+        echo "<td>$row[firstname]</td>";
+        echo "<td>$row[lastname]</td>";
+        echo "<td>$row[email]</td>";
+        echo "<td>$row[mobile]</td>";
+
+        echo "<td>";
+                    $category->id = $category_id;
+               $category->getName();
+               echo $category->name;
+        echo "</td>";
+
+        echo "<td>";
+        // edit user button
+        echo "<a href='edit.php?id=" . $id . "' class='btn btn-warning left-margin'>";
+        echo "<span class='glyphicon glyphicon-edit'></span> Edit";
+        echo "</a>";
+
+        // delete user button
+        echo "<a href='delete.php?id=" . $id . "' class='btn btn-danger delete-object'>";
+        echo "<span class='glyphicon glyphicon-remove'></span> Delete";
+        echo "</a>";
+
+        echo "</td>";
+        echo "</tr>";
+    }
+
+    echo "</table>";
+
+    // include pagination file
+    include_once 'pagination.php';
+}
+
+// if there are no user
+else{
+    echo "<div> No User found. </div>";
+    }
+?>
+
+<?php
+include_once "footer.php";
+?>
+```
+***
+### **create.php**
+
+Here what should be done is to generate a file and to identify it as 'create.php' so that it will be possible to get data from users and to save in mysql database. Through this file, some appropriate message are provided about data are insert or not with bootstrap label.  Create() function given in 'user.php' class file completes the create operation. 
+
+##### **Create a "Read Users" Button**
+
+This will be put in between the header and footer. Under the "Create User" and "Edit User" header.
+
+```php
+// read user button
+echo "<div class='right-button-margin'>";
+    echo "<a href='index.php' class='btn btn-info pull-right'>";
+        echo "<span class='glyphicon glyphicon-list-alt'></span> Read Users ";
+    echo "</a>";
+echo "</div>";
+```
+As you will notice, what should be done first is to verify whether there is form submit by checking $_POST variable. If we see that there is, then we check each entries to make sure that they pass validation rules. It renewes database by applying $_POST data.
+
+```php
+// check if the form is submitted
+if ($_POST){
+
+    // instantiate user object
+    include_once 'classes/user.php';
+    $user = new User($db);
+
+    // set user property values
+    $user->firstname = htmlentities(trim($_POST['firstname']));
+    $user->lastname = htmlentities(trim($_POST['lastname']));
+    $user->email = htmlentities(trim($_POST['email']));
+    $user->mobile = htmlentities(trim($_POST['mobile']));
+    $user->category_id = $_POST['category_id'];
+
+
+    // if the user able to create
+    if($user->create()){
+        echo "<div class=\"alert alert-success alert-dismissable\">";
+            echo "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">
+                        &times;
+                  </button>";
+            echo "Success! User is created.";
+        echo "</div>";
+    }
+
+    // if the user unable to create
+    else{
+        echo "<div class=\"alert alert-danger alert-dismissable\">";
+            echo "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">
+                        &times;
+                  </button>";
+            echo "Error! Unable to create user.";
+        echo "</div>";
+    }
+}
+```
+Now we can put the latest values to each form elements.
+
+```php
+<!-- Bootstrap Form for creating a user -->
+<form action='create.php' role="form" method='post'>
+
+    <table class='table table-hover table-responsive table-bordered'>
+
+        <tr>
+            <td>First Name</td>
+            <td><input type='text' name='firstname'  class='form-control' placeholder="Enter First Name" required></td>
+        </tr>
+
+        <tr>
+            <td>Last Name</td>
+            <td><input type='text' name='lastname' class='form-control' placeholder="Enter Last Name" required></td>
+        </tr>
+
+        <tr>
+            <td>Email Address</td>
+            <td><input type='email' name='email' class='form-control' placeholder="Enter Email Address " required></td>
+        </tr>
+
+        <tr>
+            <td>Mobile Number</td>
+            <td><input type='number' name='mobile' class='form-control' placeholder="Enter Mobile Number" required></td>
+        </tr>
+```
+***
+### **edit.php**
+
+By Generating a data insert form, this file updates the users data. Update() function, which are clarified in 'user.php' class file, enable the update operation to be done.
+
+Create the edit.php file and set the 'Edit User' Headers. Here, a selected record from the database will be  updated and this will be the reponse to the following question: How to update a record with PDO.
+
+Enter the following code in the new update.php file. Therewith we are going to be able to integrate the latest values to each form elements.
+
+```php
+<!-- Bootstrap Form for updating a user -->
+<form action='edit.php?id=<?php echo $id; ?>' method='post'>
+
+    <table class='table table-hover table-responsive table-bordered'>
+
+        <tr>
+            <td>First Name</td>
+            <td><input type='text' name='firstname' value='<?php echo $user->firstname;?>' class='form-control' placeholder="Enter First Name" required></td>
+        </tr>
+
+        <tr>
+            <td>Last Name</td>
+            <td><input type='text' name='lastname' value='<?php echo $user->lastname;?>' class='form-control' placeholder="Enter Last Name" required></td>
+        </tr>
+
+        <tr>
+            <td>Email Address</td>
+            <td><input type='email' name='email' value='<?php echo $user->email;?>' class='form-control' placeholder="Enter Email Address" required></td>
+        </tr>
+
+        <tr>
+            <td>Mobile Number</td>
+            <td><input type='number' name='mobile' value='<?php echo $user->mobile;?>' class='form-control' placeholder="Enter Mobile Number" required></td>
+        </tr>
+```
+##### **Loop Through the Categories Records to show as Drop-down**
+
+Notice that we put an if statement if($person->category_id == $id) inside the while loop. This is to pre-select the option of the current record. The Category Option are going to call getAll() function from class file "category.php".
+
+```php
+<tr>
+          <td>Category</td>
+          <td>
+
+              <?php
+              // read the user categories from the database
+              include_once 'classes/category.php';
+
+              $category = new Category($db);
+              $prep_state = $category->getAll();
+
+              // put them in a select drop-down
+              echo "<select class='form-control' name='category_id'>";
+              echo "<option>--- Select Category ---</option>";
+
+              while ($row_category = $prep_state->fetch(PDO::FETCH_ASSOC)){
+                  extract($row_category);
+
+                  // current category of the person must be selected
+if($person->category_id == $id){ //if user category_id is equal to category id,
+                      echo "<option value='$id' selected>"; //Specifies that an option should be pre-selected when the page loads
+                  }else{
+                      echo "<option value='$id'>";
+                  }
+
+echo "$name </option>";
+              }
+              echo "</select>";
+              ?>
+          </td>
+      </tr>
+```
+
+***
+
+### **user.php**
+
+First of all we should create the Object Class for Users than the methods.
 
