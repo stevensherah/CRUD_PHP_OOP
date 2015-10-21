@@ -40,6 +40,7 @@ oopcrudproject.sql file includes the databes table structure and sample data, wh
 ### **Connecting to Database**
 
 The file 'database.php' is used in order to provide connection and configuration of database and includes a PHP class called  'Database'.  Without this class it is not possible to get a database connection. Throughout this application, Database contains all the stuff related to database connections, such as connecting.
+
 As you can see, we are using PDO for database access. Set the credentials for the database and make a new PDO connection if the connection fails display the error.
  
 In order to use this class, you need to supply correct values for $host , $db_name, $username , $password.
@@ -415,4 +416,279 @@ echo "$name </option>";
 ### **user.php**
 
 First of all we should create the Object Class for Users than the methods.
+
+##### **update() function**
+
+If we do not include the following code into user.php, the update function, which is implemented in the if statement (edit.php), will disable to work.
+
+```php
+function update()
+{
+    $sql = "UPDATE " . $this->table_name . " SET firstname = :firstname, lastname = :lastname, email = :email, mobile = :mobile, category_id  = :category_id  WHERE id = :id";
+    // prepare query
+    $prep_state = $this->db_conn->prepare($sql);
+
+
+    $prep_state->bindParam(':firstname', $this->firstname);
+    $prep_state->bindParam(':lastname', $this->lastname);
+    $prep_state->bindParam(':email', $this->email);
+    $prep_state->bindParam(':mobile', $this->mobile);
+    $prep_state->bindParam(':category_id', $this->category_id);
+    $prep_state->bindParam(':id', $this->id);
+
+    // execute the query
+    if ($prep_state->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+```
+##### **countAll() function**
+The countAll() method here provides the all row numbers of database by means of SQL statement. It is located within the file pagination.php
+```php
+public function countAll()
+{
+    $sql = "SELECT id FROM " . $this->table_name . "";
+
+    $prep_state = $this->db_conn->prepare($sql);
+    $prep_state->execute();
+
+    $num = $prep_state->rowCount(); //Returns the number of rows affected by the last SQL statement
+    return $num;
+}
+```
+##### **getAllUsers() function**
+
+gelAllUsers()Method is located within user.php but it is obtained from index.php. It means that it retrieves all information about user into the first opened page.
+
+```php
+function getAllUsers($from_record_num, $records_per_page)
+{
+    $sql = "SELECT id, firstname, lastname, email, mobile, category_id FROM " . $this->table_name . " ORDER BY firstname ASC LIMIT ?, ?";
+
+
+    $prep_state = $this->db_conn->prepare($sql);
+
+
+    $prep_state->bindParam(1, $from_record_num, PDO::PARAM_INT); //Represents the SQL INTEGER data type.
+    $prep_state->bindParam(2, $records_per_page, PDO::PARAM_INT);
+
+
+    $prep_state->execute();
+
+    return $prep_state;
+    $db_conn = NULL;
+}
+```
+##### **getUser() function**
+
+getUser()Method is for recalling one choosed User Information, which is based on the Given ID. Besides, this function is applied in edit.php and can not work without the following code inside.
+
+```php
+function getUser()
+{
+    $sql = "SELECT firstname, lastname, email, mobile, category_id FROM " . $this->table_name . " WHERE id = :id";
+
+    $prep_state = $this->db_conn->prepare($sql);
+    $prep_state->bindParam(':id', $this->id);
+    $prep_state->execute();
+
+    $row = $prep_state->fetch(PDO::FETCH_ASSOC);
+
+    $this->firstname = $row['firstname'];
+    $this->lastname = $row['lastname'];
+    $this->email = $row['email'];
+    $this->mobile = $row['mobile'];
+    $this->category_id = $row['category_id'];
+}
+```
+##### **delete() function**
+
+This is the delete() method inside the user object class used by delete.php
+```php
+function delete($id)
+{
+    $sql = "DELETE FROM " . $this->table_name . " WHERE id = :id ";
+
+    $prep_state = $this->db_conn->prepare($sql);
+    $prep_state->bindParam(':id', $this->id);
+
+    if ($prep_state->execute(array(":id" => $_GET['id']))) {
+        return true;
+    } else {
+        return false;
+    }
+}
+```
+***
+##  **category.php**
+
+##### **getALL() function**
+The create.php and category.php  above cannot work without the category class. This class is named as category.php and put inside objects.
+
+getAll() function is used to select category drop-down list.
+```php
+function getAll()
+{
+    //select all data
+    $sql = "SELECT id, name FROM " . $this->table_name . "  ORDER BY name";
+
+    $prep_state = $this->db_conn->prepare($sql);
+    $prep_state->execute();
+
+    return $prep_state;
+}
+```
+##### **getName() function**
+
+getName() function, which is used in index.php, retrieves the category name into the category column.
+
+```php
+    function getName()
+    {
+
+        $sql = "SELECT name FROM " . $this->table_name . " WHERE id = ? limit 0,1";
+
+        $prep_state = $this->db_conn->prepare($sql);
+        $prep_state->bindParam(1, $this->id); 
+        $prep_state->execute();
+
+        $row = $prep_state->fetch(PDO::FETCH_ASSOC);
+
+        $this->name = $row['name'];
+    }
+}
+```
+
+***
+
+## **delete.php**
+
+Delete button, which is activated from the first page and coded in index.php, retrieves delete.php and the id information, which are recorded in the databese table. Since we do not know which data we should delete, id plays a significant role for the identification of these datas. 
+
+As seen in the following example [http://localhost63342/crud/delete.php?id=](http://localhost63342/crud/delete.php?id=) If the variable that we want to delete, exists, then we automatically see on the screen the question of 'Are you sure to delete?'
+
+If we click the button yes, the variable, its id is detected, will be deleted through delete() function in user.php and the message 'Success! User is deleted' shows up on the screen.
+
+```php
+<?php
+
+//set page headers
+$page_title = "Delete User";
+include_once "header.php";
+include_once 'classes/database.php';
+include_once 'classes/user.php';
+include_once 'initial.php';
+// get database connection
+
+$user = new User($db);
+
+// check if the submit button yes was clicked
+if (isset($_POST['del-btn']))
+{
+    $id = $_GET['id'];
+    $user->delete();
+    header("Location: delete.php?deleted");
+}
+      // check if the user was deleted
+      if(isset($_GET['deleted'])){
+        echo "<div class=\"alert alert-success alert-dismissable\">";
+        echo "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">
+                    &times;
+              </button>";
+        echo "Success! User is deleted.";
+        echo "</div>";
+      }
+?>
+<!-- Bootstrap Form for deleting a user -->
+<?php
+    if (isset($_GET['id'])) {
+        echo "<form method='post'>";
+            echo "<table class='table table-hover table-responsive table-bordered'>";
+                echo "<input type='hidden' name='id' value='id' />";
+                    echo"<div class='alert alert-warning'>";
+                        echo"Are you sure to delete?";
+                    echo"</div>";
+                echo"<button type='submit' class='btn btn-danger' name='del-btn'>";
+                    echo"Yes";
+                echo"</button>";
+                    echo str_repeat('&nbsp;', 2);
+                echo"<a href='index.php' class='btn btn-default' role='button'>";
+                    echo" No";
+                echo"</a>";
+            echo"</table>";
+        echo"</form>";
+    }
+else {  // Back to the first page
+        echo"<a href='index.php' class='btn btn-large btn-success'><span class='glyphicon glyphicon-backward'></span> Home </a>";
+     }
+?>
+
+<?php
+include_once "footer.php";
+?>
+```
+
+***
+
+##  **pagination.php**
+
+The last section is about the process of pagination. Pagination is essentially for collecting a range of results and then spreading them out over pages to hinder them to cover all the screen. Through the process of pagination, we make a set of results easier to be viewed. As it can be seen from codes, we can figure out total number of pages in two steps. First, we calculate the overall row number in user.php by means of the countAll() method. Then we divide it  into the number of $records_per_page, that we detected in one page.
+```php
+<?php
+
+echo "<ul class=\"pagination\">";
+
+// button for first page
+if($page>1){
+    echo "<li><a href=' " . htmlspecialchars($_SERVER['PHP_SELF']) . " ' title='Go to the first page.'>";
+    echo " << First ";
+    echo "</a></li>";
+}
+
+// count all rows in the database
+$total_rows = $user->countAll();
+
+// Returns the next highest integer value by rounding up value if necessary. 18/5=3,6 ~ 4
+$total_pages = ceil($total_rows / $records_per_page); //ceil — Round fractions up
+
+// range of num of links to show
+$range = 2;
+
+// display number of link to 'range of pages' and wrap around 'current page'
+$initial_num = $page - $range;
+$condition_limit_num = ($page + $range) + 1;
+
+
+for ($x=$initial_num; $x<$condition_limit_num; $x++) {
+
+    // setting the current page
+    if (($x > 0) && ($x <= $total_pages)) {
+
+        // display current page
+        if ($x == $page) {
+            echo "<li class='active'><a href=\"#\">$x <span class=\"sr-only\">(current)</span></a></li>";
+        }
+
+        // not current page
+        else {
+            echo "<li><a href='" . htmlspecialchars($_SERVER['PHP_SELF']) . "?page=$x'>$x</a></li>";
+        }
+    }
+}
+
+// button for last page
+if($page<$total_pages){
+    echo "<li><a href='" . htmlspecialchars($_SERVER['PHP_SELF']) . "?page={$total_pages}' title='Last page is {$total_pages}.'>";
+    echo "Last >> ";
+    echo "</a></li>";
+}
+
+echo "</ul>";
+```
+
+
+
 
