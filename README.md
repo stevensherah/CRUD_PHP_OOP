@@ -375,7 +375,7 @@ Enter the following code in the new update.php file. Therewith we are going to b
 ```
 ##### **Loop Through the Categories Records to show as Drop-down**
 
-Notice that we put an if statement if($person->category_id == $id) inside the while loop. This is to pre-select the option of the current record. The Category Option are going to call getAll() function from class file "category.php".
+Notice that we put an if statement ```php if($person->category_id == $id)``` inside the while loop. This is to pre-select the option of the current record. The Category Option are going to call getAll() function from class file "category.php".
 
 ```php
 <tr>
