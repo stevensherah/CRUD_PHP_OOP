@@ -23,7 +23,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `categories`
+-- Tabellenstruktur fÃ¼r Tabelle `categories`
 --
 
 CREATE TABLE IF NOT EXISTS `categories` (
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
--- Daten für Tabelle `categories`
+-- Daten fÃ¼r Tabelle `categories`
 --
 
 INSERT INTO `categories` (`id`, `name`, `created`) VALUES
@@ -45,7 +45,7 @@ INSERT INTO `categories` (`id`, `name`, `created`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `users`
+-- Tabellenstruktur fÃ¼r Tabelle `users`
 --
 
 CREATE TABLE IF NOT EXISTS `users` (
@@ -59,58 +59,44 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=MyISAM AUTO_INCREMENT=34 DEFAULT CHARSET=latin1;
 
 --
--- Daten für Tabelle `users`
+-- Daten fÃ¼r Tabelle `users`
 --
 
 INSERT INTO `users` (`id`, `firstname`, `lastname`, `email`, `mobile`, `category_id`, `created`) VALUES
-(1, 'Ekin', 'Polat', 'ekinpolat@googlemail.com', '2147483647', 1, '2014-05-31 07:12:26'),
-(2, 'Matthias', 'Kruse', 'mat-kruse@t-online.de', '1776375287', 2, '2014-05-31 07:12:26'),
-(3, 'Alper', 'Catak', 'a.catak78@gmail.com', '1729166924', 2, '2014-05-31 07:12:26'),
-(6, 'Ayse', 'Oluk', 'ayse.oluk@googlemail.com', '+491612936743', 1, '2014-05-30 16:18:31'),
-(7, 'Cavit', 'Ates', 'cavit.ates@personal-phoenix.com', '177982122', 2, '2014-06-05 08:09:51'),
-(8, 'Christoph', 'Knoppik', 'christoph.knoppik@freenet.de', '2147483647', 4, '2014-06-05 08:10:54'),
-(9, 'Danijel', 'Stenzel', 'dstenzel72@googlemail.com', '1769237645', 2, '2015-06-20 08:19:45'),
-(10, 'Eray', 'Gueclue', 'ibrahimerayguclu@gmail', '1782856396', 3, '2014-06-05 08:12:11'),
-(11, 'Jutta', 'Collet', 'collet.jutta@gmail.com', '2147483647', 1, '2014-06-05 08:12:49'),
-(12, 'George', 'Michael', 'g.michael@gmx.de', '12386733', 2, '2015-08-27 06:43:55'),
-(13, 'Javier', 'Bardem', 'j.bardem@gmail.com', '129566888', 3, '2015-08-27 06:56:52'),
-(14, 'Michael', 'Jackson', 'm.jackson@hotmail.de', '1988227733', 3, '2015-08-27 08:27:50'),
-(15, 'Eros', 'Ramazotti', 'e.ram78@yahoo.com', '2147483647', 3, '2015-08-27 08:29:53'),
-(16, 'Angelo', 'Bautista', 'baucoolangel@yandex.ru', '2147483647', 3, '2015-08-27 08:37:17'),
-(17, 'George', 'Clonny', 'georgy@yahoo.com', '2147483647', 3, '2015-08-27 09:26:57'),
-(18, 'Angelina', 'Jolie', 'angy156@angyjlolie.com', '+491612936743', 1, '2015-08-27 17:48:18'),
-(19, 'Yasin', 'Giray', 'yasso@hotmail.de', '2147483647', 4, '2015-08-27 17:52:55'),
-(21, 'Tarik', 'Akan', 't.a@unluler.com', '2147483647', 3, '2015-08-27 17:56:03'),
-(24, 'Hallo', 'Happy', 'happyafrican@gmail.com', '1772149867', 4, '2015-08-28 10:00:56'),
-(30, 'Ayhan', 'Oluk', 'a.oenal@gmx.de', '+491612936743', 2, '2015-09-10 15:10:01');
+(1, 'George', 'Michael', 'g.michael@gmx.de', '12386733', 2, '2015-08-27 06:43:55'),
+(2, 'Javier', 'Bardem', 'j.bardem@gmail.com', '129566888', 3, '2015-08-27 06:56:52'),
+(3, 'Michael', 'Jackson', 'm.jackson@hotmail.de', '1988227733', 3, '2015-08-27 08:27:50'),
+(4, 'Eros', 'Ramazotti', 'e.ram78@yahoo.com', '2147483647', 3, '2015-08-27 08:29:53'),
+(5, 'George', 'Clonny', 'georgy@yahoo.com', '2147483647', 3, '2015-08-27 09:26:57'),
+(6, 'Angelina', 'Jolie', 'angy156@angyjlolie.com', '+491612936743', 1, '2015-08-27 17:48:18');
 
 --
 -- Indizes der exportierten Tabellen
 --
 
 --
--- Indizes für die Tabelle `categories`
+-- Indizes fÃ¼r die Tabelle `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indizes für die Tabelle `users`
+-- Indizes fÃ¼r die Tabelle `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT für exportierte Tabellen
+-- AUTO_INCREMENT fÃ¼r exportierte Tabellen
 --
 
 --
--- AUTO_INCREMENT für Tabelle `categories`
+-- AUTO_INCREMENT fÃ¼r Tabelle `categories`
 --
 ALTER TABLE `categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
 --
--- AUTO_INCREMENT für Tabelle `users`
+-- AUTO_INCREMENT fÃ¼r Tabelle `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=34;
